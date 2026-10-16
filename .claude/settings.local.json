@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python evals/test_rag_agent.py)",
+      "Bash(python3 evals/test_rag_agent.py)",
+      "Bash(.venv/bin/python3 *)"
+    ]
+  }
+}

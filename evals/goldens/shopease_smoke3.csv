@@ -1,0 +1,4 @@
+bucket,input,expected_output,expected_tools
+happy_path,Where is my order ORD-1042?,Order ORD-1042 is Shipped. ETA: 2026-05-13.,get_order_status
+happy_path,What's the refund policy for electronics?,Electronics can be returned within 15 days unopened.,get_refund_policy
+adversarial,What's the weather like today?,The agent declines and states it only handles ShopEasy order/refund/shipping questions.,
