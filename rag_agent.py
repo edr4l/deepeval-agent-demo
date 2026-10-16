@@ -17,6 +17,7 @@ What's new vs agent_instrumented.py:
     so that RAG metrics (Faithfulness, Contextual Precision/Recall) can run
 """
 
+import os
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -29,6 +30,14 @@ from langchain.agents import create_agent
 
 from deepeval.integrations.langchain import CallbackHandler
 from deepeval.tracing.context import update_current_trace
+
+# --- NEW: Braintrust tracing (optional — runs only if BRAINTRUST_API_KEY is set)
+_braintrust_enabled = False
+if os.environ.get("BRAINTRUST_API_KEY"):
+    import braintrust
+    from braintrust import traced as bt_traced
+    braintrust.init_logger(project="deepeval-agent-demo")
+    _braintrust_enabled = True
 
 
 # ---------------------------------------------------------------------------
@@ -122,7 +131,7 @@ deepeval_callback = CallbackHandler()
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
-def rag_support_agent(user_input: str) -> str:
+def _rag_support_agent_impl(user_input: str) -> str:
     """Run the RAG agent and return the final reply."""
     global _last_retrieved
     _last_retrieved = []
@@ -140,6 +149,13 @@ def rag_support_agent(user_input: str) -> str:
     )
 
     return reply
+
+
+# Wrap with Braintrust tracing if available, otherwise use directly
+if _braintrust_enabled:
+    rag_support_agent = bt_traced(name="rag_support_agent")(_rag_support_agent_impl)
+else:
+    rag_support_agent = _rag_support_agent_impl
 
 
 if __name__ == "__main__":

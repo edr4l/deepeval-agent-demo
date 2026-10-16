@@ -40,6 +40,14 @@ from langchain.agents import create_agent
 from deepeval.integrations.langchain import CallbackHandler
 from deepeval.tracing.context import update_current_trace
 
+# --- NEW: Braintrust tracing (optional — runs only if BRAINTRUST_API_KEY is set)
+_braintrust_enabled = False
+if os.environ.get("BRAINTRUST_API_KEY"):
+    import braintrust
+    from braintrust import traced as bt_traced
+    braintrust.init_logger(project="deepeval-agent-demo")
+    _braintrust_enabled = True
+
 
 # ---------------------------------------------------------------------------
 # Same fake data as agent_plain.py.
@@ -112,7 +120,7 @@ deepeval_callback = CallbackHandler()
 
 # core method
 # @opik.track
-def support_agent(user_input: str) -> str:
+def _support_agent_impl(user_input: str) -> str:
     """Run the agent on a user message and return the final reply."""
     # --- (3) NEW: pass the callback handler in the .invoke() config ------
     result = asyncio.run(agent.ainvoke(
@@ -122,6 +130,13 @@ def support_agent(user_input: str) -> str:
     reply = result["messages"][-1].content
     update_current_trace(output=reply)
     return reply
+
+
+# Wrap with Braintrust tracing if available, otherwise use directly
+if _braintrust_enabled:
+    support_agent = bt_traced(name="support_agent")(_support_agent_impl)
+else:
+    support_agent = _support_agent_impl
 
 
 if __name__ == "__main__":

@@ -12,6 +12,7 @@ Create a `.env` file (already gitignored) with:
 ```
 OPENAI_API_KEY=sk-...               # agent LLM + judge LLM (GPT-4o)
 CONFIDENT_API_KEY=confident_us_...  # optional: stream traces to Confident AI dashboard
+BRAINTRUST_API_KEY=...              # optional: trace viewer at braintrust.dev (free tier)
 ```
 
 ## Running
@@ -81,6 +82,8 @@ python test_safety.py                 # Bias + Toxicity + PIILeakage
 **Cross-vendor design**: GPT-4o is used as the impartial judge for all LLM-based metrics; the agent itself also runs on GPT-4o (switched from Claude after the Anthropic key was unavailable).
 
 **Confident AI tracing**: adding `CONFIDENT_API_KEY` to `.env` is the only change needed to enable cloud tracing — no code changes required. DeepEval reads it automatically.
+
+**Braintrust tracing**: adding `BRAINTRUST_API_KEY` to `.env` enables trace viewing at braintrust.dev (free tier: 1 GB data, 10k scores/month, 14-day retention). Both `agent_instrumented.py` and `rag_agent.py` detect the key at import time and wrap their entry points with `@traced`. If the key is absent, Braintrust is skipped entirely — no import, no overhead. Traces appear in the Braintrust UI under the "deepeval-agent-demo" project.
 
 **Chatbot evaluation pattern** (`chatbot.py` / `test_chatbot.py`):
 - Uses `ConversationalTestCase` + `Turn` objects instead of `Golden`
