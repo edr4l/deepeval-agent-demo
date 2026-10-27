@@ -6,3 +6,5 @@ __pycache__/
 .deepeval*
 .pytest_cache/
 eval_results.json
+.DS_Store
+.idea/
