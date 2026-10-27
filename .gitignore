@@ -7,4 +7,6 @@ __pycache__/
 .pytest_cache/
 eval_results.json
 .DS_Store
+.idea/.DS_Store
+.idea/
 .idea/
