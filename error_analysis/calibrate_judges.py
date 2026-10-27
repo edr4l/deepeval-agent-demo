@@ -211,6 +211,18 @@ def main():
 
     print(f"\nLogged to {log_path} (run #{run_entry['run']})")
 
+    # --- Write GitHub Actions summary ---
+    summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+    if summary_path:
+        with open(summary_path, "w") as f:
+            f.write("## Judge Calibration Results\n\n")
+            f.write(f"**Model:** {MODEL} | **Traces:** {len(all_ids)} | **Run:** #{run_entry['run']}\n\n")
+            f.write("| Judge | Agreement | TPR | TNR | FP | FN |\n")
+            f.write("|-------|-----------|-----|-----|----|----|\n")
+            for cat_name in JUDGES:
+                s = run_entry["summary"][cat_name]
+                f.write(f"| {cat_name} | {s['agreement_pct']}% | {s['tpr_pct']}% | {s['tnr_pct']}% | {s['fp']} | {s['fn']} |\n")
+            f.write(f"\n*{run_entry['timestamp']}*\n")
 
 if __name__ == "__main__":
     main()
