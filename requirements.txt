@@ -1,14 +1,16 @@
 anthropic
 braintrust
 datasets
-deepeval
+deepeval==4.2.0
 evaluate
 langchain
 langchain-anthropic
 langchain-mcp-adapters
+langchain-openai
 langgraph
 nest-asyncio
 openai
+opik
 python-dotenv
 pytest
 pytest-asyncio
